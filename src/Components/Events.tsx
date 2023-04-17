@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { getEvents } from '../api';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { getEvents, createEvent } from '../api';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-interface Event {
+
+
+export interface AppEvent {
     Date: string;
     LocID: string;
     Title: string;
@@ -16,7 +19,8 @@ interface Event {
 }
 
 const Events: React.FC = () => {
-    const [events, setEvents] = useState<Event[]>([]);
+    const [events, setEvents] = useState<AppEvent[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -31,11 +35,18 @@ const Events: React.FC = () => {
         fetchEvents();
     }, []);
 
+    const handleAddEventButtonClick = () => {
+        navigate('/create-event');
+    };
+
+
+
     return (
         <div>
             <h1>Events</h1>
+            <Button onClick={handleAddEventButtonClick}>Add Event</Button>
             <TableContainer component={Paper}>
-                <Table>
+                <Table sx={{ minWidth: 650 }} aria-label="events table">
                     <TableHead>
                         <TableRow>
                             <TableCell>Title</TableCell>
@@ -53,7 +64,7 @@ const Events: React.FC = () => {
                         {events.map((event) => (
                             <TableRow key={event.event_ID}>
                                 <TableCell>{event.Title}</TableCell>
-                                <TableCell>{new Date(event.Date).toLocaleDateString()}</TableCell>
+                                <TableCell>{event.Date}</TableCell>
                                 <TableCell>{event.LocID}</TableCell>
                                 <TableCell>{event.contact_name}</TableCell>
                                 <TableCell>{event.contact_email}</TableCell>

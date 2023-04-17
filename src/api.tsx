@@ -1,5 +1,6 @@
 // api.ts
 import axios, { AxiosError } from 'axios';
+import { AppEvent } from './Components/Events'
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:5000',
@@ -7,6 +8,12 @@ const apiClient = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+export interface ApiResponse {
+    success: boolean;
+    message?: any;
+    data?: any;
+}
 
 interface LoginData {
     user_ID: string;
@@ -75,6 +82,18 @@ export const getEvents = async () => {
     try {
         const response = await axios.get('http://localhost:5000/events');
         console.log(response.data)
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
+    }
+};
+
+export const createEvent = async (event: AppEvent): Promise<ApiResponse> => {
+    console.log(event)
+    try {
+        const response = await axios.post('http://localhost:5000/events', event);
+        console.log(response)
         return { success: true, data: response.data };
     } catch (error) {
         const axiosError = error as AxiosError;

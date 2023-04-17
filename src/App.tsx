@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from './Pages/HomePage';
 import RegisterPage from './Pages/RegisterPage';
 import Events from './Components/Events';
+import { CreateEventPage } from './Components/CreateEventsPage';
 import './App.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/create-event" element={<CreateEventPage />} />
         </Routes>
       </BrowserRouter>
     </div>
