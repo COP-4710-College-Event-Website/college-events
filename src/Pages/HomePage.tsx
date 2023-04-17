@@ -1,8 +1,8 @@
 // HomePage.tsx
 import React, { FormEvent, useState } from 'react';
-import { Container, Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import { Container, Box, TextField, Button, Typography, CircularProgress, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { logon } from '../api';
+import { logon, isAdmin, isSuperAdmin } from '../api';
 import { useUserContext } from '../Context/UserContext';
 
 
@@ -49,21 +49,42 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
 
 const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const { setUser_ID } = useUserContext();
+    const { setUser_ID, setUserRole } = useUserContext();
 
     const handleLogin = async (user_ID: string, password: string) => {
         setLoading(true);
+        setError(null);
         const response = await logon({ user_ID, password });
 
         if (response.success) {
             console.log(response);
-            console.log(`Logged in successfully. Response: ${response}`);
             setUser_ID(user_ID); // Set the user_ID in the context
+
+            // Check if the user is an admin or super admin
+            const superAdminResponse = await isSuperAdmin(user_ID);
+
+            if (superAdminResponse.success) {
+                console.log("superadmin");
+                setUserRole('superadmin');
+            } else {
+                // Check if the user is an admin
+                const adminResponse = await isAdmin(user_ID);
+
+                if (adminResponse.success) {
+                    console.log("admin");
+                    setUserRole('admin');
+                } else {
+                    console.log("student");
+                    setUserRole('student');
+                }
+            }
+
             navigate('/events'); // Navigate to the Events page
         } else {
             console.error(`Login failed. Reason: ${response.message}`);
-            // Show an error message to the user
+            setError("Invalid Username or Password");
         }
 
         setLoading(false);
@@ -80,6 +101,11 @@ const HomePage: React.FC = () => {
                     Welcome to My App
                 </Typography>
                 <LoginForm onLogin={handleLogin} />
+                {error && (
+                    <Box marginTop={2}>
+                        <Alert severity="error">{error}</Alert>
+                    </Box>
+                )}
                 {loading && (
                     <Box marginTop={2}>
                         <CircularProgress />

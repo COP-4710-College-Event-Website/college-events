@@ -64,8 +64,8 @@ export const register = async (data: RegisterData): Promise<RegisterResponse> =>
 
 export const logon = async (data: LoginData): Promise<LoginResponse> => {
     try {
-        console.log(data)
-        const response = await apiClient.post('/login', data);
+        const response = await axios.post('http://localhost:5000/login', data);
+        console.log(response)
         return { success: true, data: response.data };
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -81,7 +81,6 @@ export const logon = async (data: LoginData): Promise<LoginResponse> => {
 export const getEvents = async () => {
     try {
         const response = await axios.get('http://localhost:5000/events');
-        console.log(response.data)
         return { success: true, data: response.data };
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -93,6 +92,28 @@ export const createEvent = async (event: AppEvent): Promise<ApiResponse> => {
     console.log(event)
     try {
         const response = await axios.post('http://localhost:5000/events', event);
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
+    }
+};
+
+export const isAdmin = async (user_ID: string): Promise<ApiResponse> => {
+    return await checkUserRole(user_ID, 'admin');
+};
+
+export const isSuperAdmin = async (user_ID: string): Promise<ApiResponse> => {
+    return await checkUserRole(user_ID, 'sadmin');
+};
+
+export const checkUserRole = async (user_ID: string, endpoint: string): Promise<ApiResponse> => {
+    console.log(endpoint)
+    console.log(user_ID)
+    try {
+        const response = await axios.get(`http://localhost:5000/${endpoint}/${user_ID}`, {
+
+        });
         console.log(response)
         return { success: true, data: response.data };
     } catch (error) {
