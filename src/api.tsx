@@ -15,7 +15,7 @@ interface LoginData {
 
 interface LoginResponse {
     success: boolean;
-    token?: string;
+    data?: any;
     message?: string;
 }
 
@@ -41,6 +41,7 @@ interface RegisterResponse {
 
 export const register = async (data: RegisterData): Promise<RegisterResponse> => {
     try {
+        console.log(data)
         await apiClient.post('/register', data);
         return { success: true };
     } catch (error) {
@@ -58,7 +59,7 @@ export const logon = async (data: LoginData): Promise<LoginResponse> => {
     try {
         console.log(data)
         const response = await apiClient.post('/login', data);
-        return { success: true, token: response.data.token };
+        return { success: true, data: response.data };
     } catch (error) {
         const axiosError = error as AxiosError;
 
@@ -67,5 +68,16 @@ export const logon = async (data: LoginData): Promise<LoginResponse> => {
         }
 
         return { success: false, message: axiosError.message };
+    }
+};
+
+export const getEvents = async () => {
+    try {
+        const response = await axios.get('http://localhost:5000/events');
+        console.log(response.data)
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
     }
 };
