@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getEvents, createEvent } from '../api';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+import { useUserContext } from '../Context/UserContext';
 
 
 export interface AppEvent {
@@ -21,6 +21,7 @@ export interface AppEvent {
 const Events: React.FC = () => {
     const [events, setEvents] = useState<AppEvent[]>([]);
     const navigate = useNavigate();
+    const { userRole } = useUserContext();
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -44,7 +45,17 @@ const Events: React.FC = () => {
     return (
         <div>
             <h1>Events</h1>
-            <Button onClick={handleAddEventButtonClick}>Add Event</Button>
+            {userRole === 'admin' || userRole === 'superadmin' ? (
+                <Box marginBottom={2} display="flex" justifyContent="center">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => navigate('/event-form')}
+                    >
+                        Add Event
+                    </Button>
+                </Box>
+            ) : null}
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="events table">
                     <TableHead>
