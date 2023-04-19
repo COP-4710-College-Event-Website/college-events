@@ -53,6 +53,7 @@ interface Comment {
     user_ID: string | null;
     text: string;
     rating: number;
+    time?: any;
 }
 
 export const register = async (data: RegisterData): Promise<RegisterResponse> => {
@@ -163,6 +164,7 @@ export const addOrganization = async (organization: Organization): Promise<ApiRe
 export const fetchEventComments = async (event_ID: number): Promise<ApiResponse> => {
     try {
         const response = await axios.get(`http://localhost:5000/comments/${event_ID}`);
+        console.log(response)
         return { success: true, data: response.data };
     } catch (error) {
         const axiosError = error as AxiosError;
@@ -180,3 +182,5 @@ export const addComment = async (comment: Comment): Promise<ApiResponse> => {
         return { success: false, message: axiosError.response?.data || 'Unknown error' };
     }
 };
+
+

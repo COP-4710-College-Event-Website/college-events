@@ -3,6 +3,7 @@ import { getEvents, createEvent } from '../api';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../Context/UserContext';
+import axios from 'axios';
 
 
 export interface AppEvent {
@@ -44,6 +45,22 @@ const Events: React.FC = () => {
         navigate(`/events/${event.event_ID}`);
     };
 
+    const handleDeleteEvent = async (event: AppEvent) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/events/${event.event_ID}`);
+            if (response.status === 200) {
+                // Delete was successful
+                console.log('Event deleted successfully');
+                const updatedEvents = events.filter((e) => e.event_ID !== event.event_ID);
+                setEvents(updatedEvents);
+            }
+
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+        }
+    };
+
+
     return (
         <div>
             <h1>Events</h1>
@@ -67,7 +84,7 @@ const Events: React.FC = () => {
                 </Box>
             ) : null}
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="events table">
+                <Table sx={{ minWidth: 500 }} aria-label="events table">
                     <TableHead>
                         <TableRow>
                             <TableCell>Title</TableCell>
@@ -79,14 +96,16 @@ const Events: React.FC = () => {
                             <TableCell>Description</TableCell>
                             <TableCell>Start Time</TableCell>
                             <TableCell>End Time</TableCell>
+                            <TableCell>View</TableCell>
+                            {userRole === 'admin' || userRole === 'superadmin' ? (
+                                <TableCell>Delete</TableCell>
+                            ) : null}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {events.map((event) => (
                             <TableRow
                                 key={event.event_ID}
-                                onClick={() => handleTableRowClick(event)}
-                                style={{ cursor: 'pointer' }}
                             >
                                 <TableCell>{event.Title}</TableCell>
                                 <TableCell>{event.Date}</TableCell>
@@ -97,9 +116,31 @@ const Events: React.FC = () => {
                                 <TableCell>{event.description}</TableCell>
                                 <TableCell>{event.start}</TableCell>
                                 <TableCell>{event.end}</TableCell>
+                                <TableCell>
+
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => handleTableRowClick(event)}
+                                    >
+                                        View
+                                    </Button>
+                                </TableCell>
+                                {userRole === 'admin' || userRole === 'superadmin' ? (
+                                    <TableCell>
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            onClick={() => handleDeleteEvent(event)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                ) : null}
                             </TableRow>
                         ))}
                     </TableBody>
+
                 </Table>
             </TableContainer>
         </div>
