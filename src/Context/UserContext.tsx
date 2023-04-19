@@ -7,6 +7,8 @@ interface UserContextValue {
     setUser_ID: (user_ID: string | null) => void;
     userRole: UserRole | null;
     setUserRole: (userRole: UserRole | null) => void;
+    admin_ID: number | null;
+    setAdmin_ID: (admin_ID: number | null) => void;
 }
 
 const UserContext = createContext<UserContextValue>({
@@ -14,6 +16,8 @@ const UserContext = createContext<UserContextValue>({
     setUser_ID: () => { },
     userRole: null,
     setUserRole: () => { },
+    admin_ID: null,
+    setAdmin_ID: () => { }
 });
 
 export const useUserContext = () => useContext(UserContext);
@@ -25,9 +29,10 @@ interface UserContextProviderProps {
 export const UserContextProvider: React.FC<UserContextProviderProps> = ({ children }) => {
     const [user_ID, setUser_ID] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<UserRole | null>(null);
+    const [admin_ID, setAdmin_ID] = useState<number | null>(null);
 
     return (
-        <UserContext.Provider value={{ user_ID, setUser_ID, userRole, setUserRole }}>
+        <UserContext.Provider value={{ user_ID, setUser_ID, userRole, setUserRole, admin_ID, setAdmin_ID }}>
             {children}
         </UserContext.Provider>
     );

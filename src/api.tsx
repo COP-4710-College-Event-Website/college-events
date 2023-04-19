@@ -1,6 +1,7 @@
 // api.ts
 import axios, { AxiosError } from 'axios';
 import { AppEvent } from './Components/Events'
+import { Organization } from './Components/OrganizationForm';
 
 const apiClient = axios.create({
     baseURL: 'http://localhost:5000',
@@ -44,6 +45,14 @@ interface RegisterData {
 interface RegisterResponse {
     success: boolean;
     message?: string;
+}
+
+interface Comment {
+    comment_ID?: number;
+    event_ID: any; // Add this line
+    user_ID: string | null;
+    text: string;
+    rating: number;
 }
 
 export const register = async (data: RegisterData): Promise<RegisterResponse> => {
@@ -111,7 +120,7 @@ export const checkUserRole = async (user_ID: string, endpoint: string): Promise<
     console.log(user_ID);
     try {
         const response = await axios.get(`http://localhost:5000/${endpoint}/${user_ID}`);
-
+        console.log(response)
         if (response.status === 200) {
             console.log(response);
             return { success: true, data: response.data };
@@ -125,5 +134,49 @@ export const checkUserRole = async (user_ID: string, endpoint: string): Promise<
         } else {
             return { success: false, message: axiosError.response?.data || 'Unknown error' };
         }
+    }
+};
+
+export const fetchOrganizations = async (): Promise<ApiResponse> => {
+    try {
+        const response = await axios.get('http://localhost:5000/rso');
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
+    }
+};
+
+export const addOrganization = async (organization: Organization): Promise<ApiResponse> => {
+    delete organization.status
+    console.log(organization)
+    try {
+        const response = await axios.post('http://localhost:5000/rso', organization);
+        console.log(response)
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
+    }
+};
+
+export const fetchEventComments = async (event_ID: number): Promise<ApiResponse> => {
+    try {
+        const response = await axios.get(`http://localhost:5000/comments/${event_ID}`);
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
+    }
+};
+
+export const addComment = async (comment: Comment): Promise<ApiResponse> => {
+    console.log(comment)
+    try {
+        const response = await axios.post("http://localhost:5000/comments", comment);
+        return { success: true, data: response.data };
+    } catch (error) {
+        const axiosError = error as AxiosError;
+        return { success: false, message: axiosError.response?.data || 'Unknown error' };
     }
 };

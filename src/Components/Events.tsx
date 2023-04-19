@@ -40,7 +40,9 @@ const Events: React.FC = () => {
         navigate('/create-event');
     };
 
-
+    const handleTableRowClick = (event: AppEvent) => {
+        navigate(`/events/${event.event_ID}`);
+    };
 
     return (
         <div>
@@ -53,6 +55,14 @@ const Events: React.FC = () => {
                         onClick={() => navigate('/event-form')}
                     >
                         Add Event
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => navigate('/organizations')}
+                        style={{ marginRight: 8 }}
+                    >
+                        View Organizations
                     </Button>
                 </Box>
             ) : null}
@@ -73,7 +83,11 @@ const Events: React.FC = () => {
                     </TableHead>
                     <TableBody>
                         {events.map((event) => (
-                            <TableRow key={event.event_ID}>
+                            <TableRow
+                                key={event.event_ID}
+                                onClick={() => handleTableRowClick(event)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <TableCell>{event.Title}</TableCell>
                                 <TableCell>{event.Date}</TableCell>
                                 <TableCell>{event.LocID}</TableCell>

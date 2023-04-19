@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
-    const { setUser_ID, setUserRole } = useUserContext();
+    const { setUser_ID, setUserRole, admin_ID, setAdmin_ID } = useUserContext();
 
     const handleLogin = async (user_ID: string, password: string) => {
         setLoading(true);
@@ -59,7 +59,6 @@ const HomePage: React.FC = () => {
         const response = await logon({ user_ID, password });
 
         if (response.success) {
-            console.log(response);
             setUser_ID(user_ID); // Set the user_ID in the context
 
             // Check if the user is an admin or super admin
@@ -67,6 +66,7 @@ const HomePage: React.FC = () => {
 
             if (superAdminResponse.success) {
                 console.log("superadmin");
+                setAdmin_ID(superAdminResponse.data[0].superAdmin_ID)
                 setUserRole('superadmin');
             } else {
                 // Check if the user is an admin
